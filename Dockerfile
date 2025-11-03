@@ -1,11 +1,20 @@
-FROM python:3.9.2-slim-buster
-RUN apt-get update -y && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends gcc libffi-dev musl-dev ffmpeg aria2 python3-pip \
+FROM python:3.9-slim-buster
+
+# Install required system packages
+RUN apt-get update -y && apt-get install -y \
+    gcc g++ libffi-dev libssl-dev ffmpeg aria2 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . /app/
-WORKDIR /app/
-RUN pip3 install -r requirements.txt
-CMD python3 modules/main.py
+# Set working directory
+WORKDIR /app
 
+# Copy all project files
+COPY . .
+
+# Install Python dependencies
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+# Run the bot
+CMD ["python", "modules/main.py"]
